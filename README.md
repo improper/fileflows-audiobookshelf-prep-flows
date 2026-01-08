@@ -5,7 +5,14 @@ FileFlows Audiobookshelf Prep Flows
 
 ## Meet the flows
 Flows that prep book folders/files (ebooks and audiobooks) for Audiobookshelf: clean up, enrich metadata, convert ebooks to EPUB, and place audio/ebook assets into your library structure.
-- Entry flows: `📒 Books.json` (folder-triggered) and `📒 Books by File.json` (file-triggered).
+- High-level flow:
+  1. Intake + workspace prep: if the drop is a single folder inside another, pull the inner folder out and rerun it <img src="./resources/Recycle.png" alt="Recycle icon" width="14" height="14">; if it's only zip/rar junk, log it, mark it for deletion <img src="./resources/trash.png" alt="Trash icon" width="14" height="14">, and stop.
+  2. Derive title/author hints from folder/file names, then fetch/enrich metadata (Google Books, Open Library, optional OpenAI).
+  3. Build author/series folders and convert ebooks to EPUB where needed.
+  4. Move/rename into the Audiobookshelf layout and tidy the workspace.
+- Entry flows:
+  - `📒 Books by directory.json` (folder-triggered): takes a folder drop, prepares the workspace, enriches metadata, and shelves it in your Audiobookshelf layout.
+  - `📒 Books by File.json` (file-triggered): takes a single book file, fetches/enriches metadata, converts to EPUB if needed, and shelves it in your Audiobookshelf layout.
 - Subflows: `Subflow prep book workspace`, `Subflow set book from folder`, `Subflow fetch Google book info`, `Subflow find book series from Google info`, `Subflow set book from search`, `Subflow query OpenAI for book info`.
 
 ## Why use this
@@ -31,17 +38,17 @@ Import in this order to satisfy subflow dependencies:
 5) `Subflow prep book workspace`
 6) `Subflow find book series from Google info`
 7) `📒 Books by File.json`
-8) `📒 Books.json`
+8) `📒 Books by directory.json`
 
 ## Configure after import
 - Library paths:
-  - `📒 Books.json` → node `Move eBook Directory`: set `DestinationPath` to your Audiobookshelf books path.
+  - `📒 Books by directory.json` → node `Move eBook Directory`: set `DestinationPath` to your Audiobookshelf books path.
   - `📒 Books by File.json` → node `Set: authorDirectory`: update the base path for authors.
   - Both flows use `finalDestinationDirectory` variables; ensure they match your layout.
 - Optional: confirm `AudiobookshelfLibraryPath` matches your environment.
 
 ## How it runs
-- Folder-triggered (`📒 Books.json`):
+- Folder-triggered (`📒 Books by directory.json`):
   - Prep workspace and detect unwanted archives.
   - Derive book metadata from folder name; validate mp3 layout; convert ebooks to EPUB.
   - Fetch metadata from Google Books; enrich series info from Open Library; build author/series folders.

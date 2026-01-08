@@ -1,8 +1,8 @@
 {
-  "Name": "\u2387 \uD83D\uDCD2 Books",
+  "Name": "\uD83D\uDCD2 Books by directory",
   "Type": 0,
   "Revision": 198,
-  "Description": "Attempts to process a book based on the creation of a directory.",
+  "Description": "Takes a folder drop, prepares the workspace, enriches metadata, and places it into your Audiobookshelf layout.",
   "Icon": "fas fa-folder",
   "Properties": {
     "Fields": [],

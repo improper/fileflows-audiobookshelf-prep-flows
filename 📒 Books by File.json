@@ -2,7 +2,7 @@
   "Name": "\uD83D\uDCD2 Books by File",
   "Type": 0,
   "Revision": 137,
-  "Description": "Attempts to process a book based on the creation of a file.",
+  "Description": "Takes a single book file drop, fetches/enriches metadata, converts to EPUB when needed, and places it into your Audiobookshelf layout.",
   "Icon": "fas fa-folder",
   "Properties": {
     "Fields": [],
