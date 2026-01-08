@@ -47,6 +47,14 @@ Import in this order to satisfy subflow dependencies:
   - Both flows use `finalDestinationDirectory` variables; ensure they match your layout.
 - Optional: confirm `AudiobookshelfLibraryPath` matches your environment.
 
+## Set up libraries/watchers
+- Create two FileFlows Libraries (titles shown in the screenshot) to start using the flows:
+  - `Watch for Book Directories`: watches your book download folder for incoming folders and triggers `📒 Books by directory`.
+    - Ensure the library is set to watch folders only. Reference: ![Watch folders only](documentation/assets/how-to-watch-folders-only.png)
+  - `Watch for Book Files`: watches the same download folder for files and triggers `📒 Books by file`; restrict extensions to `m4b`, `wav`, `mobi`, `mp3`, `epub`, `flac`, `pdf`, `wma`, `cbr`, `m4a`, `cbz`, `aac`, `azw3`.
+- Reference: ![Library watcher setup](documentation/assets/library-setup.png)
+- Allowed extensions example: ![File extensions to watch](documentation/assets/file-extensions-to-watch.png)
+
 ## How it runs
 - Folder-triggered (`📒 Books by directory.json`):
   - Prep workspace and detect unwanted archives.
