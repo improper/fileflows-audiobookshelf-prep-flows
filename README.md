@@ -3,6 +3,11 @@ FileFlows Audiobookshelf Prep Flows
 
 ![Processed books example](documentation/assets/processed-books.png)
 
+## Why use this
+- Automates metadata lookup (Google Books, Open Library, optional OpenAI) and EPUB conversion.
+- Normalizes author/series/book folders for Audiobookshelf.
+- Handles both folder and single-file drop scenarios.
+
 ## Meet the flows
 Flows that prep book folders/files (ebooks and audiobooks) for Audiobookshelf: clean up, enrich metadata, convert ebooks to EPUB, and place audio/ebook assets into your library structure.
 
@@ -18,11 +23,6 @@ Flows that prep book folders/files (ebooks and audiobooks) for Audiobookshelf: c
 
 #### Subflows
 `Subflow prep book workspace`, `Subflow set book from folder`, `Subflow fetch Google book info`, `Subflow find book series from Google info`, `Subflow set book from search`, `Subflow query OpenAI for book info`.
-
-## Why use this
-- Automates metadata lookup (Google Books, Open Library, optional OpenAI) and EPUB conversion.
-- Normalizes author/series/book folders for Audiobookshelf.
-- Handles both folder and single-file drop scenarios.
 
 ## Prerequisites
 - Plugins Book and Web installed/enabled (Settings > Extensions > Plugins); provides nodes like `FileFlows.Book.EBookConverter` and Web Request.
