@@ -1,0 +1,454 @@
+{
+  "Name": "\uD83D\uDCD2 Books by File",
+  "Type": 0,
+  "Revision": 137,
+  "Description": "Attempts to process a book based on the creation of a file.",
+  "Icon": "fas fa-folder",
+  "Properties": {
+    "Fields": [],
+    "Variables": {}
+  },
+  "SubFlows": [
+    "1d325e8c-f9ff-4626-afce-e170d11bce6d",
+    "80c5737e-eccc-48ad-be2a-cad129ce7a7c",
+    "4408e4f2-84fe-41a3-bd70-31595ff431a2"
+  ],
+  "Parts": [
+    {
+      "Uid": "b92d4ce4-afaf-4610-9083-515750eb8057",
+      "Name": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.CompleteFlow",
+      "xPos": 590,
+      "yPos": 740,
+      "Icon": "fas fa-check-square",
+      "Label": "Complete Flow",
+      "Inputs": 1,
+      "Outputs": 0,
+      "CustomColor": "var(--success)",
+      "Type": 3,
+      "Model": {}
+    },
+    {
+      "Uid": "74172a32-d3b2-453b-a72d-1672dc6af388",
+      "Name": "Create Author Directory if Missing",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Function",
+      "xPos": 330,
+      "yPos": 250,
+      "Icon": "svg:javascript",
+      "Label": "Function",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "55da8704-df37-472d-8a16-a2269d40c1d7"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "Outputs": 1,
+        "Code": "\n    // Use .NET IO from JavaScript per FileFlows docs\n    const path = Variables.authorDirectory;\n\n    if (System.IO.Directory.Exists(path) === false) {\n      System.IO.Directory.CreateDirectory(path);\n      Logger.ILog(\u0060Created directory: ${path}\u0060);\n    } else {\n      Logger.ILog(\u0060Directory already exists: ${path}\u0060);\n    }\n\n    return 1; // success"
+      }
+    },
+    {
+      "Uid": "261550d9-723e-40da-b43a-339af060e3e0",
+      "Name": "Create Series Directory if Missing",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Function",
+      "xPos": 540,
+      "yPos": 300,
+      "Icon": "svg:javascript",
+      "Label": "Function",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "b2eba80a-54b5-4afc-a521-3bdebb70ec0c"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "Outputs": 1,
+        "Code": "    // Use .NET IO from JavaScript per FileFlows docs\n    const path = Variables.seriesDirectory;\n\n    if (System.IO.Directory.Exists(path) === false) {\n      System.IO.Directory.CreateDirectory(path);\n      Logger.ILog(\u0060Created series directory: ${path}\u0060);\n    } else {\n      Logger.ILog(\u0060Series directory already exists: ${path}\u0060);\n    }\n\n    return 1; // success"
+      }
+    },
+    {
+      "Uid": "b2eba80a-54b5-4afc-a521-3bdebb70ec0c",
+      "Name": "Set finalDestinationDirectory",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetVariable",
+      "xPos": 600,
+      "yPos": 410,
+      "Icon": "fas fa-at",
+      "Label": "Set Variable",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "4f960468-e866-4e58-b61a-06c5d2bbba41"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Variable": "finalDestinationDirectory",
+        "Value": "{seriesDirectory}{book.book}/"
+      }
+    },
+    {
+      "Uid": "fc2f2202-c738-4054-be1b-45819d432612",
+      "Name": "Set finalDestinationDirectory",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetVariable",
+      "xPos": 830,
+      "yPos": 150,
+      "Icon": "fas fa-at",
+      "Label": "Set Variable",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "4f960468-e866-4e58-b61a-06c5d2bbba41"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Variable": "finalDestinationDirectory",
+        "Value": "{authorDirectory}{book.book}/"
+      }
+    },
+    {
+      "Uid": "71c87d81-1898-4884-b7ec-812e8b6d3dc4",
+      "Name": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.File.InputFile",
+      "xPos": 90,
+      "yPos": 30,
+      "Icon": "far fa-file",
+      "Label": "Input File",
+      "Inputs": 0,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "8b2873f1-eef5-4538-8c8f-0249dbdc77d1"
+        }
+      ],
+      "Type": 0,
+      "Model": {}
+    },
+    {
+      "Uid": "5f1b16c1-513f-4ad3-88ed-1c6e2b026991",
+      "Name": "Set: authorDirectory",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetVariable",
+      "xPos": 330,
+      "yPos": 160,
+      "Icon": "fas fa-at",
+      "Label": "Set Variable",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "74172a32-d3b2-453b-a72d-1672dc6af388"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Variable": "authorDirectory",
+        "Value": "/media/tyler/library/Books/Books/{googleBookAuthor}/"
+      }
+    },
+    {
+      "Uid": "55da8704-df37-472d-8a16-a2269d40c1d7",
+      "Name": "Is Series Found",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Function",
+      "xPos": 540,
+      "yPos": 40,
+      "Icon": "svg:javascript",
+      "Label": "Function",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "3e843ea5-f4f9-4080-b015-2f66e765d33b"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "fc2f2202-c738-4054-be1b-45819d432612"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "Outputs": 2,
+        "Code": "if (!Variables.book.series) {\n    return 2;\n}\n\nreturn 1;"
+      }
+    },
+    {
+      "Uid": "3e843ea5-f4f9-4080-b015-2f66e765d33b",
+      "Name": "Set: seriesDirectory",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetVariable",
+      "xPos": 540,
+      "yPos": 210,
+      "Icon": "fas fa-at",
+      "Label": "Set Variable",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "261550d9-723e-40da-b43a-339af060e3e0"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Variable": "seriesDirectory",
+        "Value": "{authorDirectory}{book.series}/"
+      }
+    },
+    {
+      "Uid": "8b2873f1-eef5-4538-8c8f-0249dbdc77d1",
+      "Name": "Starting Data",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Logging.LogVariables",
+      "xPos": 90,
+      "yPos": 110,
+      "Icon": "fas fa-at",
+      "Label": "Log Variables",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "f79a08f7-41ca-4fe4-9c23-622746f6cd63"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Recursive": true
+      }
+    },
+    {
+      "Uid": "302395f3-83ab-4de5-9258-6f88cd9b6c21",
+      "Name": "",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.File.MoveFile",
+      "xPos": 600,
+      "yPos": 640,
+      "Icon": "fas fa-file-export",
+      "Label": "Move File",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "b92d4ce4-afaf-4610-9083-515750eb8057"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "b92d4ce4-afaf-4610-9083-515750eb8057"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "InputFile": "",
+        "DestinationPath": "{finalDestinationDirectory}",
+        "DestinationFile": "{book.book}{file.Extension}",
+        "MoveFolder": false,
+        "DeleteOriginal": true,
+        "AdditionalFiles": [],
+        "AdditionalFilesFromOriginal": false,
+        "PreserverOriginalDates": true
+      }
+    },
+    {
+      "Uid": "f79a08f7-41ca-4fe4-9c23-622746f6cd63",
+      "Name": "Set: searchBookTitle",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetVariable",
+      "xPos": 90,
+      "yPos": 200,
+      "Icon": "fas fa-at",
+      "Label": "Set Variable",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "c5becea1-6f51-47c8-af7b-d70248149860"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Variable": "searchBookTitle",
+        "Value": "{file.Name}"
+      }
+    },
+    {
+      "Uid": "c5becea1-6f51-47c8-af7b-d70248149860",
+      "Name": "Set Book Info from Query String",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlow:1d325e8c-f9ff-4626-afce-e170d11bce6d",
+      "xPos": 90,
+      "yPos": 300,
+      "Icon": "fas fa-subway",
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "c8e2fc91-7083-457c-b433-79ae68705a15"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "a35467d5-85eb-4f77-b25e-408dcc86ee2c"
+        }
+      ],
+      "Type": 10,
+      "Model": {
+        "Output": 1
+      }
+    },
+    {
+      "Uid": "c8e2fc91-7083-457c-b433-79ae68705a15",
+      "Name": "Subflow: Get Google Book Info from \u0022book\u0022 object",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlow:4408e4f2-84fe-41a3-bd70-31595ff431a2",
+      "xPos": 330,
+      "yPos": 40,
+      "Icon": "fas fa-subway",
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "5f1b16c1-513f-4ad3-88ed-1c6e2b026991"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "a35467d5-85eb-4f77-b25e-408dcc86ee2c"
+        }
+      ],
+      "Type": 10,
+      "Model": {
+        "Output": 1
+      }
+    },
+    {
+      "Uid": "4f960468-e866-4e58-b61a-06c5d2bbba41",
+      "Name": "Convert to EPUB",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.Book.EBook.EBookConverter",
+      "xPos": 770,
+      "yPos": 530,
+      "Icon": "fas fa-book",
+      "Label": "eBook Converter",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "302395f3-83ab-4de5-9258-6f88cd9b6c21"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "c4db3884-552e-4cf9-b2c4-ec11928654af"
+      },
+      "Type": 2,
+      "Model": {
+        "Format": "epub"
+      }
+    },
+    {
+      "Uid": "a35467d5-85eb-4f77-b25e-408dcc86ee2c",
+      "Name": "Set finalDestinationDirectory",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetVariable",
+      "xPos": 350,
+      "yPos": 410,
+      "Icon": "fas fa-at",
+      "Label": "Set Variable",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "4f960468-e866-4e58-b61a-06c5d2bbba41"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Variable": "finalDestinationDirectory",
+        "Value": "/media/tyler/library/Books/Books/Unknown/"
+      }
+    },
+    {
+      "Uid": "c4db3884-552e-4cf9-b2c4-ec11928654af",
+      "Name": "Could not convert to epub",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Log",
+      "xPos": 950,
+      "yPos": 590,
+      "Icon": "far fa-file-alt",
+      "Label": "Log",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "302395f3-83ab-4de5-9258-6f88cd9b6c21"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "LogType": 0,
+        "Message": "Could not convert to epub. Likely an invalid ebook document missing a valid mobi or PDF header."
+      }
+    }
+  ]
+}

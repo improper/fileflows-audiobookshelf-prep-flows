@@ -1,0 +1,292 @@
+{
+  "Name": "Subflow query OpenAI for book info",
+  "Uid": "80c5737e-eccc-48ad-be2a-cad129ce7a7c",
+  "Type": 2,
+  "Revision": 27,
+  "Description": "Sends openAIMessage to model; outputs 1: response received",
+  "Icon": "fas fa-brain",
+  "Properties": {
+    "Fields": [
+      {
+        "Name": "openAISecretKey",
+        "Type": 0,
+        "Description": "OpenAI secret key from https://platform.openai.com/api-keys",
+        "Required": true,
+        "DefaultValue": "",
+        "IntMinimum": 0,
+        "IntMaximum": 0,
+        "Inverse": false,
+        "IfName": "",
+        "IfValue": "",
+        "IfNot": false
+      },
+      {
+        "Name": "openAIModel",
+        "Type": 0,
+        "Description": "OpenAI model (default \u0022gpt-4.1\u0022)",
+        "Required": true,
+        "DefaultValue": "gpt-4.1",
+        "IntMinimum": 0,
+        "IntMaximum": 0,
+        "Inverse": false,
+        "IfName": "",
+        "IfValue": "",
+        "IfNot": false
+      },
+      {
+        "Name": "openAIAllowedDomains",
+        "Type": 0,
+        "Description": "Comma separated list of allowed domains (subdomains of domain will be allowed)",
+        "Options": [],
+        "Required": true,
+        "DefaultValue": "google.com, openlibrary.org, amazon.com, audible.com, reddit.com",
+        "IntMinimum": 0,
+        "IntMaximum": 0,
+        "Inverse": false,
+        "IfName": "",
+        "IfValue": "",
+        "IfNot": false
+      },
+      {
+        "Name": "openAISystemInstructions",
+        "Type": 0,
+        "Required": true,
+        "DefaultValue": "Extract the book title and author from a provided file name. If the author name is not explicitly included, query Amazon, Google, or Open Library for the correct author. If author cannot be found, leverage popularity of book to assume the author. Respond with JSON only that includes title as book, author, and series if the book is part of a series such as Harry Potter or Dungeon Crawler Carl.",
+        "IntMinimum": 0,
+        "IntMaximum": 0,
+        "Inverse": false,
+        "IfName": "",
+        "IfValue": "",
+        "IfNot": false
+      },
+      {
+        "Name": "openAIResponseFormat",
+        "Type": 0,
+        "Description": "Determines the JSON object that the bot should respond with.",
+        "Required": true,
+        "DefaultValue": "{         \u0022name\u0022: \u0022book\u0022,         \u0022type\u0022: \u0022json_schema\u0022,         \u0022strict\u0022: true,         \u0022schema\u0022: {           \u0022type\u0022: \u0022object\u0022,           \u0022properties\u0022: {             \u0022author\u0022: { \u0022type\u0022: [\u0022string\u0022, \u0022null\u0022], \u0022description\u0022: \u0022The name of the author.\u0022 },             \u0022book\u0022:   { \u0022type\u0022: [\u0022string\u0022, \u0022null\u0022], \u0022description\u0022: \u0022The title of the book.\u0022 },             \u0022series\u0022: { \u0022type\u0022: [\u0022string\u0022, \u0022null\u0022], \u0022description\u0022: \u0022The title of the series (if applicable).\u0022 }           },           \u0022required\u0022: [\u0022author\u0022,\u0022book\u0022,\u0022series\u0022],           \u0022additionalProperties\u0022: false         }       }",
+        "IntMinimum": 0,
+        "IntMaximum": 0,
+        "Inverse": false,
+        "IfName": "",
+        "IfValue": "",
+        "IfNot": false
+      }
+    ],
+    "Variables": {},
+    "Outputs": [
+      {
+        "Key": 1,
+        "Value": "Response Received"
+      }
+    ]
+  },
+  "Parts": [
+    {
+      "Uid": "381d0f84-7754-401b-a951-9cf3aff2d484",
+      "Name": "Sub Flow Input",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowInput",
+      "xPos": 90,
+      "yPos": 30,
+      "Label": "",
+      "Inputs": 0,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "38b6c7b3-315f-4e8d-ae60-e521d19cdc7f"
+        }
+      ],
+      "Type": 0
+    },
+    {
+      "Uid": "a50c9f94-af57-43c1-8c1d-de65b97980f8",
+      "Name": "Subflow Dump",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Logging.LogVariables",
+      "xPos": 80,
+      "yPos": 460,
+      "Label": "Log Variables",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "ba6e09c9-c350-44cd-a2a7-fb74d97d9304"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Recursive": true
+      }
+    },
+    {
+      "Uid": "a3cc9114-9a3a-4af9-bcdc-d124728d91a9",
+      "Name": "Send Request to Open AI",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.Web.FlowElements.WebRequest",
+      "xPos": 90,
+      "yPos": 230,
+      "Label": "Web Request",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "cef0fa30-a6fa-49ae-9cdb-c8ab79116c90"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "bdf01339-171c-4196-bc83-a86369fb7baa"
+        }
+      ],
+      "Type": 8,
+      "Model": {
+        "Url": "https://api.openai.com/v1/responses",
+        "Method": "POST",
+        "ContentType": "application/json",
+        "Headers": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {openAISecretKey}"
+          }
+        ],
+        "Body": "{openAIPostBody}",
+        "ResponseVariable": "aiResponse"
+      }
+    },
+    {
+      "Uid": "818e7956-5fb9-4a2e-8a62-3a563454f2b0",
+      "Name": "Bad Response: Get Book Name, Author, \u0026 Series",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.FailFlow",
+      "xPos": 450,
+      "yPos": 400,
+      "Label": "Fail Flow",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 3,
+      "Model": {
+        "Reason": "Unexpected response received from OpenAI"
+      }
+    },
+    {
+      "Uid": "ba6e09c9-c350-44cd-a2a7-fb74d97d9304",
+      "Name": "Sub Flow Output1",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowOutput1",
+      "xPos": 80,
+      "yPos": 560,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 1,
+      "Model": {
+        "Output": 1
+      }
+    },
+    {
+      "Uid": "d0b63270-f169-41fb-8346-e3f265951db6",
+      "Name": "Subflow Dump",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Logging.LogVariables",
+      "xPos": 450,
+      "yPos": 310,
+      "Label": "Log Variables",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "818e7956-5fb9-4a2e-8a62-3a563454f2b0"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Recursive": true
+      }
+    },
+    {
+      "Uid": "cef0fa30-a6fa-49ae-9cdb-c8ab79116c90",
+      "Name": "Body Dump",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Log",
+      "xPos": 80,
+      "yPos": 360,
+      "Label": "Log",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "a50c9f94-af57-43c1-8c1d-de65b97980f8"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "LogType": 3,
+        "Message": "{openAIPostBody}"
+      }
+    },
+    {
+      "Uid": "bdf01339-171c-4196-bc83-a86369fb7baa",
+      "Name": "Dump: openAIPostBody",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Log",
+      "xPos": 450,
+      "yPos": 220,
+      "Label": "Log",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "d0b63270-f169-41fb-8346-e3f265951db6"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "LogType": 3,
+        "Message": "{openAIPostBody}"
+      }
+    },
+    {
+      "Uid": "38b6c7b3-315f-4e8d-ae60-e521d19cdc7f",
+      "Name": "Set: openAIPostBody",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetVariable",
+      "xPos": 90,
+      "yPos": 130,
+      "Label": "Set Variable",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "a3cc9114-9a3a-4af9-bcdc-d124728d91a9"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Variable": "openAIPostBody",
+        "Value": "{     \u0022model\u0022: \u0022{openAIModel}\u0022,     \u0022max_tool_calls\u0022: 4,     \u0022parallel_tool_calls\u0022: true,     \u0022tool_choice\u0022: \u0022required\u0022,     \u0022tools\u0022: [       {         \u0022type\u0022: \u0022web_search\u0022,         \u0022filters\u0022: {\u0022allowed_domains\u0022: {openAIAllowedDomains}}       }     ],     \u0022instructions\u0022: \u0022{openAISystemInstructions}\u0022,     \u0022input\u0022: [       {         \u0022role\u0022: \u0022user\u0022,         \u0022content\u0022: [           { \u0022type\u0022: \u0022input_text\u0022, \u0022text\u0022: \u0022{openAIMsg}\u0022 }         ]       }     ],     \u0022text\u0022: {       \u0022format\u0022: {openAIResponseFormat}     }   }"
+      }
+    }
+  ]
+}

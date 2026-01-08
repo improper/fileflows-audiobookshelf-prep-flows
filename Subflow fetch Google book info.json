@@ -1,0 +1,197 @@
+{
+  "Name": "Subflow fetch Google book info",
+  "Uid": "4408e4f2-84fe-41a3-bd70-31595ff431a2",
+  "Type": 2,
+  "Revision": 25,
+  "Description": "Fetches Google Books info using Variables.book; outputs 1: set, 2: not identified",
+  "Icon": "fas fa-globe",
+  "Properties": {
+    "Fields": [],
+    "Variables": {},
+    "Outputs": [
+      {
+        "Key": 1,
+        "Value": "Did Set Google Book Info"
+      },
+      {
+        "Key": 2,
+        "Value": "Unable to ID Book"
+      }
+    ]
+  },
+  "Parts": [
+    {
+      "Uid": "37eedba8-d5c9-407b-9b5e-a385f003cd0d",
+      "Name": "Sub Flow Input: Book Title",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowInput",
+      "xPos": 90,
+      "yPos": 30,
+      "Label": "",
+      "Inputs": 0,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "245ec3fa-c832-4014-bc1d-56b253086448"
+        }
+      ],
+      "Type": 0,
+      "Model": {}
+    },
+    {
+      "Uid": "245ec3fa-c832-4014-bc1d-56b253086448",
+      "Name": "Ask Google For Book Details",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.Web.FlowElements.WebRequest",
+      "xPos": 90,
+      "yPos": 130,
+      "Label": "Web Request",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "1b7d6f6f-b026-4078-880d-40ac3e9d9f92"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "c548697a-ab93-4b36-b616-083930be2ec3"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "e0e69dc8-c3df-4781-8bfa-07de751050c8"
+      },
+      "Type": 8,
+      "Model": {
+        "Url": "https://www.googleapis.com/books/v1/volumes?q={book.book}",
+        "Method": "GET",
+        "ContentType": "application/json",
+        "Headers": [],
+        "Body": null,
+        "ResponseVariable": "googleBooks"
+      }
+    },
+    {
+      "Uid": "c548697a-ab93-4b36-b616-083930be2ec3",
+      "Name": "Log: Bad Response",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Log",
+      "xPos": 290,
+      "yPos": 230,
+      "Label": "Log",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "67cce24a-477b-4b52-aa6f-0c5d95f15e9e"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "LogType": 0,
+        "Message": "Google responded with a non-200 status"
+      }
+    },
+    {
+      "Uid": "0d6e9524-9cc5-41ef-a155-53c7016b768a",
+      "Name": "Set googleBooks Info",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Function",
+      "xPos": 90,
+      "yPos": 410,
+      "Label": "Function",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "86532756-ac18-4fe8-8765-3c7b03721b0b"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "e0e69dc8-c3df-4781-8bfa-07de751050c8"
+      },
+      "Type": 2,
+      "Model": {
+        "Outputs": 1,
+        "Code": "// Grab the JSON object saved by your Web Request node\nconst gb = Variables.googleBooks;\n\nif(gb?.items \u0026\u0026 gb?.items.length === 0)\n{\n    return -1\n}\n\n// Safely walk the JSON and extract fields\nconst title = gb?.items?.[0]?.volumeInfo?.title ?? \u0022\u0022;\nconst subtitle = gb?.items?.[0]?.volumeInfo?.subtitle ?? \u0022\u0022; \nconst publishedDate = gb?.items?.[0]?.volumeInfo?.publishedDate ?? \u0022\u0022;\nconst author        = gb?.items?.[0]?.volumeInfo?.authors?.[0] ?? \u0022\u0022;\n\n// Extract year if possible (first 4 digits)\nlet year = \u0022\u0022;\nif(publishedDate) {\n    const match = publishedDate.match(/^(\\d{4})/);\n    if (match) {\n        year = match[1];\n    }\n}\n\n// Store flat strings for downstream nodes (Log, Rename, Web Request, etc.)\nVariables.googleBookTitle=title;\nVariables.googleBookSubTitle=subtitle;\nVariables.googleBookPublishedDate=publishedDate;\nVariables.googleBookYear=year;\nVariables.googleBookAuthor=author;\n\nLogger.DLog(Variables)\n\n// route OK\nreturn 1;"
+      }
+    },
+    {
+      "Uid": "67cce24a-477b-4b52-aa6f-0c5d95f15e9e",
+      "Name": "Cannot Identify",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowOutput",
+      "xPos": 600,
+      "yPos": 330,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 1,
+      "Model": {
+        "Output": 2
+      }
+    },
+    {
+      "Uid": "86532756-ac18-4fe8-8765-3c7b03721b0b",
+      "Name": "Has Book Info",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowOutput",
+      "xPos": 90,
+      "yPos": 540,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 1,
+      "Model": {
+        "Output": 1
+      }
+    },
+    {
+      "Uid": "1b7d6f6f-b026-4078-880d-40ac3e9d9f92",
+      "Name": "Did Find Matching Books",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Function",
+      "xPos": 90,
+      "yPos": 310,
+      "Label": "Function",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "0d6e9524-9cc5-41ef-a155-53c7016b768a"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "67cce24a-477b-4b52-aa6f-0c5d95f15e9e"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "Outputs": 2,
+        "Code": "// Custom javascript code that you can run against the flow file.\n// Flow contains helper functions for the Flow.\n// Variables contain variables available to this flow element from previous flow elements.\n// Logger lets you log messages to the flow output.\n\n// return 0 to complete the flow.\n// return -1 to signal an error in the flow\n// return 1\u002B to select which output node will be processed next\n\nif(Variables.googleBooks.totalItems === 0)\n\treturn 2;\n\nreturn 1;"
+      }
+    }
+  ]
+}

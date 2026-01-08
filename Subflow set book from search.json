@@ -1,0 +1,215 @@
+{
+  "Name": "Subflow set book from search",
+  "Uid": "1d325e8c-f9ff-4626-afce-e170d11bce6d",
+  "Type": 2,
+  "Revision": 25,
+  "Description": "Sets Variables.book from searchBookTitle; outputs 1: found, 2: not found",
+  "Icon": "fas fa-search",
+  "Properties": {
+    "Fields": [],
+    "Variables": {},
+    "Outputs": [
+      {
+        "Key": 1,
+        "Value": "Book Found \u0026 Book Variable Set"
+      },
+      {
+        "Key": 2,
+        "Value": "Book not Found"
+      }
+    ]
+  },
+  "SubFlows": [
+    "80c5737e-eccc-48ad-be2a-cad129ce7a7c"
+  ],
+  "Parts": [
+    {
+      "Uid": "a47b6a7f-c54e-4562-a223-fef3c7d1bd71",
+      "Name": "Sub Flow Input",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowInput",
+      "xPos": 50,
+      "yPos": 70,
+      "Label": "",
+      "Inputs": 0,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "cabf90ad-02ad-4dbc-8f58-47885fb1084f"
+        }
+      ],
+      "Type": 0
+    },
+    {
+      "Uid": "a1dce150-d9bd-4e69-aaa5-e138e7b13daa",
+      "Name": "Set bookInfo Variable",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Function",
+      "xPos": 490,
+      "yPos": 80,
+      "Label": "Function",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "ea861552-7f0d-4ae8-817d-1b594897d8b8"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "Outputs": 1,
+        "Code": "// Safely read outputs\nvar outputs = (Variables.aiResponse \u0026\u0026 Variables.aiResponse.output) || [];\n\n// Find the last item with type === \u0022message\u0022\nvar lastMessage = null;\nfor (var i = outputs.length - 1; i \u003E= 0; i--) {\n  var o = outputs[i];\n  if (o \u0026\u0026 o.type === \u0022message\u0022) {\n    lastMessage = o;\n    break;\n  }\n}\n\nif (!lastMessage) {\n  Logger.ILog(\u0022No message item found in aiResponse.output\u0022);\n  return -1;\n}\n\n// From that message, get the first output_text block\nvar outputText = null;\nvar content = lastMessage.content || [];\nfor (var j = 0; j \u003C content.length; j\u002B\u002B) {\n  var c = content[j];\n  if (c \u0026\u0026 c.type === \u0022output_text\u0022 \u0026\u0026 typeof c.text === \u0022string\u0022) {\n    outputText = c.text;\n    break;\n  }\n}\n\nLogger.ILog(\u0022outputText: \u0022 \u002B (outputText || \u0022null\u0022));\n\nif (!outputText) {\n  return -1;\n}\n\ntry {\n  Variables.book = JSON.parse(outputText);\n  Logger.ILog(\u0022Variables.book: \u0022 \u002B JSON.stringify(Variables.book));\n  return 1;\n} catch (e) {\n  Variables.book = null;\n  Logger.ILog(\u0022JSON parse error: \u0022 \u002B (e \u0026\u0026 e.message ? e.message : String(e)));\n  return -1;\n}\n"
+      }
+    },
+    {
+      "Uid": "ea861552-7f0d-4ae8-817d-1b594897d8b8",
+      "Name": "Is Book Found",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Function",
+      "xPos": 690,
+      "yPos": 80,
+      "Label": "Function",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "32bf0252-58ea-43f1-98be-f7141595a844"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "cd6fe54b-df16-48bd-8ae0-3a89384907aa"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "cd6fe54b-df16-48bd-8ae0-3a89384907aa"
+      },
+      "Type": 2,
+      "Model": {
+        "Outputs": 2,
+        "Code": "if (!Variables.book) {\n    return 2;\n}\n\nconst { book } = Variables.book;\n\nif (!book) {\n    return 2;\n}\n\nreturn 1;"
+      }
+    },
+    {
+      "Uid": "32bf0252-58ea-43f1-98be-f7141595a844",
+      "Name": "Sub Flow Output1",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowOutput1",
+      "xPos": 570,
+      "yPos": 460,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 1,
+      "Model": {
+        "Output": 1
+      }
+    },
+    {
+      "Uid": "cd6fe54b-df16-48bd-8ae0-3a89384907aa",
+      "Name": "Sub Flow Output2",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowOutput2",
+      "xPos": 800,
+      "yPos": 460,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 1,
+      "Model": {
+        "Output": 2
+      }
+    },
+    {
+      "Uid": "cabf90ad-02ad-4dbc-8f58-47885fb1084f",
+      "Name": "Hack: Set openAIMessage manually for subflow",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetVariable",
+      "xPos": 50,
+      "yPos": 180,
+      "Label": "Set Variable",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "682d5c6a-0c71-4cb5-b44a-15d2a542059a"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Variable": "openAIMsg",
+        "Value": "{searchBookTitle}"
+      }
+    },
+    {
+      "Uid": "682d5c6a-0c71-4cb5-b44a-15d2a542059a",
+      "Name": "Log: openAIMessage",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Log",
+      "xPos": 50,
+      "yPos": 310,
+      "Label": "Log",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "11f6b20d-289e-4e85-9551-2191a32f6e8b"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "LogType": 2,
+        "Message": "{openAIMessage}"
+      }
+    },
+    {
+      "Uid": "11f6b20d-289e-4e85-9551-2191a32f6e8b",
+      "Name": "Query OpenAI",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlow:80c5737e-eccc-48ad-be2a-cad129ce7a7c",
+      "xPos": 280,
+      "yPos": 70,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "a1dce150-d9bd-4e69-aaa5-e138e7b13daa"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "cd6fe54b-df16-48bd-8ae0-3a89384907aa"
+      },
+      "Type": 10,
+      "Model": {
+        "Output": 1,
+        "openAISecretKey": "{openAISecretKey}",
+        "openAIModel": "gpt-4.1",
+        "openAIAllowedDomains": "[\u0022google.com\u0022, \u0022openlibrary.org\u0022, \u0022amazon.com\u0022, \u0022audible.com\u0022, \u0022reddit.com\u0022]",
+        "openAISystemInstructions": "Extract \u0027book\u0027, \u0027author\u0027, and (if applicable) \u0027series\u0027 from the input; if \u0027author\u0027 is missing, look it up on Amazon/Google/Open Library or infer from popularity\u2014\u0027author\u0027 must never be null when a book is detected; normalize \u0027series\u0027 to the franchise name only and strip numbering/qualifiers (remove any parenthetical/bracketed chunks with digits or tokens like \u0027#\u0027,\u0027Book\u0027,\u0027Vol\u0027,\u0027Volume\u0027,\u0027Part\u0027,\u0027Episode\u0027,\u0027Ep\u0027); after forming the JSON, proof-read your own response to ensure \u0027author\u0027 is never null and \u0027series\u0027 contains no digits or numbering tokens; if either rule is violated, correct it before returning; final response must be JSON only in the form: {\u0027book\u0027:\u0027...\u0027,\u0027author\u0027:\u0027...\u0027,\u0027series\u0027:...}.",
+        "openAIResponseFormat": "{         \u0022name\u0022: \u0022book\u0022,         \u0022type\u0022: \u0022json_schema\u0022,         \u0022strict\u0022: true,         \u0022schema\u0022: {           \u0022type\u0022: \u0022object\u0022,           \u0022properties\u0022: {             \u0022author\u0022: { \u0022type\u0022: [\u0022string\u0022, \u0022null\u0022], \u0022description\u0022: \u0022The name of the author.\u0022 },             \u0022book\u0022:   { \u0022type\u0022: [\u0022string\u0022, \u0022null\u0022], \u0022description\u0022: \u0022The title of the book.\u0022 },             \u0022series\u0022: { \u0022type\u0022: [\u0022string\u0022, \u0022null\u0022], \u0022description\u0022: \u0022The title of the series (if applicable).\u0022 }           },           \u0022required\u0022: [\u0022author\u0022,\u0022book\u0022,\u0022series\u0022],           \u0022additionalProperties\u0022: false         }       }"
+      }
+    }
+  ]
+}

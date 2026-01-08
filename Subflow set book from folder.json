@@ -1,0 +1,451 @@
+{
+  "Name": "Subflow set book from folder",
+  "Uid": "34c67611-60a3-4e90-b559-211f1cd6462c",
+  "Type": 2,
+  "Revision": 44,
+  "Description": "Sets Variables.book from folder.Orig.Name; outputs 1: found metadata, 2: not found",
+  "Icon": "fas fa-folder-open",
+  "Properties": {
+    "Fields": [],
+    "Variables": {},
+    "Outputs": [
+      {
+        "Key": 1,
+        "Value": "Found metadata"
+      },
+      {
+        "Key": 2,
+        "Value": "Did not find metadata"
+      }
+    ]
+  },
+  "Parts": [
+    {
+      "Uid": "8b1adbbb-2a82-413a-9512-4d4ebb5af577",
+      "Name": "Sub Flow Input",
+      "ReadOnly": true,
+      "FlowElementUid": "SubFlowInput",
+      "xPos": 80,
+      "yPos": 10,
+      "Icon": "fas fa-long-arrow-alt-down",
+      "Label": "",
+      "Inputs": 0,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "468185a7-a08a-4954-8ac6-bfac23f53b3f"
+        }
+      ],
+      "Type": 0
+    },
+    {
+      "Uid": "fe6265f5-1a11-46d8-a922-44a93100931f",
+      "Name": "Log Book Not IDed",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Log",
+      "xPos": 300,
+      "yPos": 440,
+      "Icon": "far fa-file-alt",
+      "Label": "Log",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "7934f4a1-ea2a-44ad-9839-17e2494b931a"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "LogType": 0,
+        "Message": "Could not ID this book via Google API"
+      }
+    },
+    {
+      "Uid": "349910a0-aaaf-4d39-8048-87f55457a105",
+      "Name": "1: Book found",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowOutput",
+      "xPos": 20,
+      "yPos": 1150,
+      "Icon": "fas fa-sign-out-alt",
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 1,
+      "Model": {
+        "Output": 1
+      }
+    },
+    {
+      "Uid": "7934f4a1-ea2a-44ad-9839-17e2494b931a",
+      "Name": "2: Book info not found",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowOutput",
+      "xPos": 520,
+      "yPos": 440,
+      "Icon": "fas fa-sign-out-alt",
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 1,
+      "Model": {
+        "Output": 2
+      }
+    },
+    {
+      "Uid": "f67f2bd2-9306-4d17-bab8-386d7848f274",
+      "Name": "Search Audiobookshelf",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.Web.FlowElements.WebRequest",
+      "xPos": 80,
+      "yPos": 200,
+      "Icon": "fas fa-globe",
+      "Label": "Web Request",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "081db616-0994-4d01-98ed-2263c8624913"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "2e86eb46-003b-47b0-9aaa-272386301a80"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "2e86eb46-003b-47b0-9aaa-272386301a80"
+      },
+      "Type": 8,
+      "Model": {
+        "Url": "https://bookshelf.humby.app/audiobookshelf/api/search/books?provider=google\u0026fallbackTitleOnly=1\u0026title={titleQuery}\u0026author={authorQuery}}\u0026token={audiobookshelfApiToken}",
+        "Method": "GET",
+        "ContentType": "application/json",
+        "Headers": [],
+        "Body": null,
+        "ResponseVariable": "bookResults"
+      }
+    },
+    {
+      "Uid": "2e86eb46-003b-47b0-9aaa-272386301a80",
+      "Name": "Fail",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.FailFlow",
+      "xPos": 770,
+      "yPos": 200,
+      "Icon": "fas fa-exclamation-triangle",
+      "Label": "Fail Flow",
+      "Inputs": 1,
+      "Outputs": 0,
+      "CustomColor": "var(--error)",
+      "Type": 3,
+      "Model": {
+        "Reason": "Audiobookshelf request failed"
+      }
+    },
+    {
+      "Uid": "081db616-0994-4d01-98ed-2263c8624913",
+      "Name": "Set book variable",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Function",
+      "xPos": 50,
+      "yPos": 320,
+      "Icon": "svg:javascript",
+      "Label": "Function",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "9d0fc9d1-daa0-4508-8888-937ffbeaa734"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "b082926a-ce92-4242-89ca-3c7cd26eb030"
+      },
+      "Type": 2,
+      "Model": {
+        "Outputs": 1,
+        "Code": "Variables.book=Variables.bookResults[0]\n\nreturn 1"
+      }
+    },
+    {
+      "Uid": "9d0fc9d1-daa0-4508-8888-937ffbeaa734",
+      "Name": "book found",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.File.VariableExists",
+      "xPos": 70,
+      "yPos": 430,
+      "Icon": "fas fa-question",
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "fe6265f5-1a11-46d8-a922-44a93100931f"
+        },
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "3a8c7c35-3bf7-48d4-a65c-3cfac76aaabf"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "2e86eb46-003b-47b0-9aaa-272386301a80"
+      },
+      "Type": 3,
+      "Model": {
+        "Variable": "book.title"
+      }
+    },
+    {
+      "Uid": "3a8c7c35-3bf7-48d4-a65c-3cfac76aaabf",
+      "Name": "Search Audiobookshelf Covers",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.Web.FlowElements.WebRequest",
+      "xPos": 30,
+      "yPos": 520,
+      "Icon": "fas fa-globe",
+      "Label": "Web Request",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "cd6eabdc-2ed7-415f-95cf-87a930da7be6"
+        }
+      ],
+      "Type": 8,
+      "Model": {
+        "Url": "https://bookshelf.humby.app/audiobookshelf/api/search/covers?provider=google\u0026fallbackTitleOnly=1\u0026title={book.title}\u0026author={book.author}\u0026token={audiobookshelfApiToken}",
+        "Method": "GET",
+        "ContentType": "application/json",
+        "Headers": [],
+        "Body": null,
+        "ResponseVariable": "coverResults"
+      }
+    },
+    {
+      "Uid": "12eaceb4-8c5c-4f93-9764-9a16762bfc6d",
+      "Name": "Set coverUrl variable",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Function",
+      "xPos": 30,
+      "yPos": 760,
+      "Icon": "svg:javascript",
+      "Label": "Function",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "1d7a3a5b-686e-4287-af64-a59d1a5b5fc4"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "4884dcfa-ab42-46fd-a39b-29748a0f27c2"
+      },
+      "Type": 2,
+      "Model": {
+        "Outputs": 1,
+        "Code": "Variables.coverUrl=Variables.coverResults.results[0]\n\nreturn 1"
+      }
+    },
+    {
+      "Uid": "1d7a3a5b-686e-4287-af64-a59d1a5b5fc4",
+      "Name": "Download Cover Image",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.Web.FlowElements.Downloader",
+      "xPos": 30,
+      "yPos": 850,
+      "Icon": "fas fa-download",
+      "Label": "Downloader",
+      "Inputs": 1,
+      "Outputs": 2,
+      "CustomColor": "#40a6eb",
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "978ad5f5-fe45-4e36-ae5b-2fc45e5d1ccb"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "4884dcfa-ab42-46fd-a39b-29748a0f27c2"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "4884dcfa-ab42-46fd-a39b-29748a0f27c2"
+      },
+      "Type": 8,
+      "Model": {
+        "Url": "{coverUrl}"
+      }
+    },
+    {
+      "Uid": "4884dcfa-ab42-46fd-a39b-29748a0f27c2",
+      "Name": "Log",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Logging.LogVariables",
+      "xPos": 530,
+      "yPos": 830,
+      "Icon": "fas fa-at",
+      "Label": "Log Variables",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "2e86eb46-003b-47b0-9aaa-272386301a80"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Recursive": false
+      }
+    },
+    {
+      "Uid": "978ad5f5-fe45-4e36-ae5b-2fc45e5d1ccb",
+      "Name": "",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetFileFlowsThumbnail",
+      "xPos": 20,
+      "yPos": 970,
+      "Icon": "fas fa-image",
+      "Label": "Set FileFlows Thumbnail",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "6f4b4a63-d68c-4479-92a4-8eff18e38975"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "4884dcfa-ab42-46fd-a39b-29748a0f27c2"
+      },
+      "Type": 2,
+      "Model": {
+        "FilePath": "{file.FullName}",
+        "IfNotSet": false
+      }
+    },
+    {
+      "Uid": "468185a7-a08a-4954-8ac6-bfac23f53b3f",
+      "Name": "Set titleQuery, authorQuery",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Function",
+      "xPos": 80,
+      "yPos": 110,
+      "Icon": "svg:javascript",
+      "Label": "Function",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "f67f2bd2-9306-4d17-bab8-386d7848f274"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "2e86eb46-003b-47b0-9aaa-272386301a80"
+      },
+      "Type": 2,
+      "Model": {
+        "Outputs": 1,
+        "Code": "let raw = Variables.folder.Orig.Name;\n\nlet normalize = (s) =\u003E\n  (s || \u0027\u0027)\n    .replace(/\\.(epub|mobi|azw3|pdf)$/i, \u0027\u0027)\n    .replace(/\\([^)]*\\)/g, \u0027 \u0027)\n    .replace(/\\[[^\\]]*\\]/g, \u0027 \u0027)\n    .replace(/_/g, \u0027 \u0027)\n    .replace(/\\s\u002B/g, \u0027 \u0027)\n    .trim();\n\nlet cleanQuery = (s) =\u003E\n  (s || \u0027\u0027)\n    .replace(/[\u2019\u2018]/g, \u0022\u0027\u0022)\n    .replace(/[\u201C\u201D]/g, \u0027\u0022\u0027)\n    .replace(/\\s\u002B/g, \u0027 \u0027)\n    .trim();\n\nlet trimEdgeNoise = (s) =\u003E\n  (s || \u0027\u0027)\n    .replace(/^[\\s\\-\u2013\u2014_.,:;|~\u002B]\u002B/g, \u0027\u0027)\n    .replace(/[\\s\\-\u2013\u2014_.,:;|~\u002B]\u002B$/g, \u0027\u0027)\n    .trim();\n\nlet isYear = (s) =\u003E {\n  if (!/^\\d{4}$/.test(s || \u0027\u0027)) return false;\n  let y = Number(s);\n  let max = new Date().getFullYear() \u002B 1;\n  return y \u003E= 1800 \u0026\u0026 y \u003C= max;\n};\n\nlet stripTrailingFormatWords = (s) =\u003E\n  trimEdgeNoise(\n    cleanQuery(s).replace(\n      /(?:\\s\u002B|[-\u2013\u2014]\\s*)\\b(epub|mobi|azw3|pdf|ebook|kindle|kobo|ibooks)\\b(?:\\s\u002B|$)/gi,\n      \u0027 \u0027\n    ).replace(/\\s\u002B/g, \u0027 \u0027)\n  );\n\nlet stripDigitsFromAuthor = (s) =\u003E\n  trimEdgeNoise(\n    cleanQuery(s)\n      .replace(/\\d\u002B/g, \u0027 \u0027)\n      .replace(/\\s\u002B/g, \u0027 \u0027)\n      .trim()\n  );\n\nlet stripYearFromTitleEdges = (s) =\u003E {\n  let out = trimEdgeNoise(cleanQuery(s));\n  out = out.replace(/^(18\\d{2}|19\\d{2}|20\\d{2}|21\\d{2})(\\s*[-\u2013\u2014]\\s*|\\s\u002B)/, \u0027\u0027);\n  out = out.replace(/(\\s*[-\u2013\u2014]\\s*|\\s\u002B)(18\\d{2}|19\\d{2}|20\\d{2}|21\\d{2})$/, \u0027\u0027);\n  return trimEdgeNoise(out);\n};\n\nlet looksLikeAuthor = (s) =\u003E {\n  let a = trimEdgeNoise(cleanQuery(s));\n  if (!a) return false;\n  if (a.length \u003E 80) return false;\n\n  let words = a.split(\u0027 \u0027).filter(Boolean);\n  if (words.length \u003C 1 || words.length \u003E 6) return false;\n\n  if (!/[A-Za-z]/.test(a)) return false;\n  if (new RegExp(\u0027https?://\u0027, \u0027i\u0027).test(a)) return false;\n  if (/\\b(episode|season|chapter|part|vol|volume|book)\\b/i.test(a)) return false;\n\n  return true;\n};\n\nlet splitOnLastBy = (s) =\u003E {\n  let text = trimEdgeNoise(cleanQuery(s));\n  if (!text) return null;\n\n  let matches = Array.from(text.matchAll(/\\bby\\b/gi));\n  if (!matches.length) return null;\n\n  for (let i = matches.length - 1; i \u003E= 0; i--) {\n    let idx = matches[i].index;\n    let left = trimEdgeNoise(text.slice(0, idx));\n    let right = trimEdgeNoise(text.slice(idx \u002B 2));\n\n    if (!left || !right) continue;\n\n    // avoid \u0022Sweet By and By\u0022 false split: right must plausibly be a name\n    if (!looksLikeAuthor(right)) continue;\n\n    return { title: left, author: right };\n  }\n\n  return null;\n};\n\nlet base = stripTrailingFormatWords(normalize(raw));\nlet parts = base.split(/\\s\u002B-\\s\u002B/).map((p) =\u003E p.trim()).filter(Boolean);\n\nlet authorQuery = \u0027\u0027;\nlet titleQuery = \u0027\u0027;\n\nif (parts.length \u003E= 3 \u0026\u0026 isYear(parts[1])) {\n  authorQuery = parts[0];\n  titleQuery = parts.slice(2).join(\u0027 - \u0027);\n} else if (parts.length \u003E= 2 \u0026\u0026 isYear(parts[0])) {\n  titleQuery = parts.slice(1).join(\u0027 - \u0027);\n} else if (parts.length \u003E= 2) {\n  authorQuery = parts[0];\n  titleQuery = parts.slice(1).join(\u0027 - \u0027);\n} else {\n  titleQuery = base;\n}\n\nauthorQuery = stripDigitsFromAuthor(authorQuery);\ntitleQuery = stripTrailingFormatWords(titleQuery);\ntitleQuery = stripYearFromTitleEdges(titleQuery);\n\n// if we still don\u0027t have an author, try: \u0022... title by Author ...\u0022\nif (!authorQuery) {\n  let by = splitOnLastBy(titleQuery);\n  if (by) {\n    titleQuery = by.title;\n    authorQuery = by.author;\n  }\n}\n\nauthorQuery = stripDigitsFromAuthor(authorQuery);\ntitleQuery = stripYearFromTitleEdges(stripTrailingFormatWords(titleQuery));\n\nif (!titleQuery \u0026\u0026 authorQuery) {\n  titleQuery = authorQuery;\n  authorQuery = \u0027\u0027;\n}\n\nlet uniq = (arr) =\u003E arr.filter((v, i) =\u003E v \u0026\u0026 arr.indexOf(v) === i);\n\nVariables.authorQuery = authorQuery;\nVariables.titleQuery = titleQuery;\nVariables.titleQueryCandidates = uniq([\n  titleQuery,\n  trimEdgeNoise(titleQuery.replace(/:\\s\u002B.*$/, \u0027\u0027)),\n  trimEdgeNoise(titleQuery.replace(/\\s\u002B-\\s\u002B.*$/, \u0027\u0027)),\n]);\n\nLogger.ILog(\u0022authorQuery set to: \u0022 \u002B Variables.authorQuery);\nLogger.ILog(\u0022titleQuery set to: \u0022 \u002B Variables.titleQuery);\nLogger.ILog(\u0022titleQueryCandidates set to: \u0022 \u002B JSON.stringify(Variables.titleQueryCandidates));\n\nreturn 1;\n"
+      }
+    },
+    {
+      "Uid": "cd6eabdc-2ed7-415f-95cf-87a930da7be6",
+      "Name": "Set FlowName",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetVariable",
+      "xPos": 20,
+      "yPos": 650,
+      "Icon": "fas fa-at",
+      "Label": "Set Variable",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "12eaceb4-8c5c-4f93-9764-9a16762bfc6d"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Variable": "FlowName",
+        "Value": "{book.title} by {book.author}"
+      }
+    },
+    {
+      "Uid": "6f4b4a63-d68c-4479-92a4-8eff18e38975",
+      "Name": "Log: Book Found",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Logging.LogVariables",
+      "xPos": 20,
+      "yPos": 1060,
+      "Icon": "fas fa-at",
+      "Label": "Log Variables",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "349910a0-aaaf-4d39-8048-87f55457a105"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Recursive": false
+      }
+    }
+  ]
+}

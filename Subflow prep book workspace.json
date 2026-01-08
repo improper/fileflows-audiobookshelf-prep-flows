@@ -1,0 +1,221 @@
+{
+  "Name": "Subflow prep book workspace",
+  "Uid": "3924f3ce-d648-47ab-a776-1d78292a2de6",
+  "Type": 2,
+  "Revision": 20,
+  "Description": "Prepares working directory; outputs 1: prepared, 2: retry, 3: unwanted archives",
+  "Icon": "fas fa-broom",
+  "Properties": {
+    "Fields": [],
+    "Variables": {},
+    "Outputs": [
+      {
+        "Key": 1,
+        "Value": "Is Prepared"
+      },
+      {
+        "Key": 2,
+        "Value": "Cycle next iteration"
+      },
+      {
+        "Key": 3,
+        "Value": "Has unwanted compressed files like zip and rar"
+      }
+    ]
+  },
+  "Parts": [
+    {
+      "Uid": "b323e8e2-3191-463e-8913-5ee7c46516c6",
+      "Name": "Sub Flow Input",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowInput",
+      "xPos": 80,
+      "yPos": 60,
+      "Label": "",
+      "Inputs": 0,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "6fdcbea3-32c6-453b-a4c1-ee6df1bdd53c"
+        }
+      ],
+      "Type": 0
+    },
+    {
+      "Uid": "6fdcbea3-32c6-453b-a4c1-ee6df1bdd53c",
+      "Name": "Is Working Directory the Asset Directory",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Function",
+      "xPos": 290,
+      "yPos": 60,
+      "Label": "Function",
+      "Inputs": 1,
+      "Outputs": 3,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "85ff87ce-72cf-4698-9ad6-9acc681bd793"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "9d418e6f-cf85-46f9-bbad-0790ad85e78d"
+        },
+        {
+          "Input": 1,
+          "Output": 3,
+          "InputNode": "9b5dbd38-aeb6-4126-a796-5d99108a45a4"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "Outputs": 3,
+        "Code": "// output 1 = assets are in current folder\n// output 2 = current folder contains ONLY ONE subfolder (container); assets are inside it\n// output 3 = current folder contains compressed files (zip/rar)\n\nconst root = Variables.folder.FullName;\nconst di = new System.IO.DirectoryInfo(root);\n\nconst dirs = di.GetDirectories();\nconst files = di.GetFiles();\n\nconst dirCount = (dirs \u0026\u0026 (dirs.length ?? dirs.Length)) ?? 0;\nconst fileCount = (files \u0026\u0026 (files.length ?? files.Length)) ?? 0;\n\nLogger.ILog(\u0060Detecting in root: ${root}\u0060);\nLogger.ILog(\u0060dirCount=${dirCount}, fileCount=${fileCount}\u0060);\n\n// compressed-file guard (simple: zip \u002B rar \u002B common rar parts/volumes)\nfor (let i = 0; i \u003C fileCount; i\u002B\u002B) {\n  const name = \u0022\u0022 \u002B files[i].Name;\n  if (/\\.(zip|rar)$/i.test(name) || /\\.part\\d\u002B\\.rar$/i.test(name) || /\\.(r\\d{2,3})$/i.test(name)) {\n    Logger.ILog(\u0060Compressed file detected -\u003E ${name}\u0060);\n    return 3;\n  }\n}\n\nif (dirCount === 1 \u0026\u0026 fileCount === 0) {\n  Variables.assetDirectory = dirs[0].FullName;\n  Logger.ILog(\u0060Container detected -\u003E assetDirectory=${Variables.assetDirectory}\u0060);\n  return 2;\n}\n\nVariables.assetDirectory = root;\nLogger.ILog(\u0060Assets assumed here -\u003E assetDirectory=${Variables.assetDirectory}\u0060);\nreturn 1;\n"
+      }
+    },
+    {
+      "Uid": "9d418e6f-cf85-46f9-bbad-0790ad85e78d",
+      "Name": "",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Logging.LogVariables",
+      "xPos": 510,
+      "yPos": 230,
+      "Label": "Log Variables",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "4060c3df-2fa6-41ef-9cd3-5e349f1ef887"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Recursive": false
+      }
+    },
+    {
+      "Uid": "4060c3df-2fa6-41ef-9cd3-5e349f1ef887",
+      "Name": "Shift directory",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.File.MoveFolder",
+      "xPos": 710,
+      "yPos": 230,
+      "Label": "Move Folder",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "533a0c77-d3d6-41f9-a47c-fcbbdf92626b"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "SourcePath": "{assetDirectory}",
+        "DestinationPath": "{library.Path}/{folder.Name}_{time.processing}",
+        "CreateSubfolder": false
+      }
+    },
+    {
+      "Uid": "533a0c77-d3d6-41f9-a47c-fcbbdf92626b",
+      "Name": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.File.DeleteOriginal",
+      "xPos": 900,
+      "yPos": 230,
+      "Label": "Delete Original",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "c142d9d5-6f62-4e28-8f23-b525bdbd3ac8"
+        }
+      ],
+      "Type": 2,
+      "Model": {}
+    },
+    {
+      "Uid": "c142d9d5-6f62-4e28-8f23-b525bdbd3ac8",
+      "Name": "",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetFileFlowsThumbnail",
+      "xPos": 1100,
+      "yPos": 230,
+      "Label": "Set FileFlows Thumbnail",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "2cf41992-0da6-4116-8b21-42eef9c07ee2"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "FilePath": "{resource.Recycle}",
+        "IfNotSet": false
+      }
+    },
+    {
+      "Uid": "85ff87ce-72cf-4698-9ad6-9acc681bd793",
+      "Name": "1: Is prepared",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowOutput",
+      "xPos": 100,
+      "yPos": 220,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 1,
+      "Model": {
+        "Output": 1
+      }
+    },
+    {
+      "Uid": "2cf41992-0da6-4116-8b21-42eef9c07ee2",
+      "Name": "2: Cycle next folder iteration",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowOutput",
+      "xPos": 1310,
+      "yPos": 230,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 1,
+      "Model": {
+        "Output": 2
+      }
+    },
+    {
+      "Uid": "9b5dbd38-aeb6-4126-a796-5d99108a45a4",
+      "Name": "3: Unwanted compressed files",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowOutput",
+      "xPos": 560,
+      "yPos": 90,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 1,
+      "Model": {
+        "Output": 3
+      }
+    }
+  ]
+}

@@ -1,0 +1,796 @@
+{
+  "Name": "\u2387 \uD83D\uDCD2 Books",
+  "Type": 0,
+  "Revision": 198,
+  "Description": "Attempts to process a book based on the creation of a directory.",
+  "Icon": "fas fa-folder",
+  "Properties": {
+    "Fields": [],
+    "Variables": {}
+  },
+  "SubFlows": [
+    "13b4af40-e190-421d-912a-b1c8ffc31bf8",
+    "3924f3ce-d648-47ab-a776-1d78292a2de6",
+    "34c67611-60a3-4e90-b559-211f1cd6462c"
+  ],
+  "Parts": [
+    {
+      "Uid": "84801911-24f6-403c-87a7-38627b67cebe",
+      "Name": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.File.InputFolder",
+      "xPos": 110,
+      "yPos": 30,
+      "Label": "Input Folder",
+      "Inputs": 0,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "2832d590-be5a-4558-8c61-604999c81799"
+        }
+      ],
+      "Type": 0,
+      "Model": {}
+    },
+    {
+      "Uid": "d976a48c-d58a-4391-b4d8-4b631cefbc52",
+      "Name": "Subflow: Get Book Series from Google Book Info",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlow:13b4af40-e190-421d-912a-b1c8ffc31bf8",
+      "xPos": 570,
+      "yPos": 1000,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "680bec4f-8646-4b13-8259-5e1e54a62b70"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "852f972e-239f-4d0d-a89e-695a53420bb0"
+        }
+      ],
+      "Type": 10,
+      "Model": {
+        "Output": 1
+      }
+    },
+    {
+      "Uid": "d2f917c0-5ac4-40b9-a487-190249d13ace",
+      "Name": "Move eBook Directory",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.File.MoveFolder",
+      "xPos": 340,
+      "yPos": 230,
+      "Label": "Move Folder",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "d8e8a8f9-617c-4ecc-92ce-0dae7436c0fc"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "SourcePath": "",
+        "DestinationPath": "/media/tyler/library/Books/Books/",
+        "CreateSubfolder": true
+      }
+    },
+    {
+      "Uid": "925bfa09-20e9-4e94-99c5-df894e2f048c",
+      "Name": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.CompleteFlow",
+      "xPos": 850,
+      "yPos": 1380,
+      "Label": "Complete Flow",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 3,
+      "Model": {}
+    },
+    {
+      "Uid": "c4b90931-94fc-4a6e-ad61-39c9e143e998",
+      "Name": "Rename each file to book title",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.FolderIterator",
+      "xPos": 490,
+      "yPos": 380,
+      "Label": "Folder Iterator",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "45e28b23-6d29-4d78-9efb-758ef8594f58"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "cef5914c-8676-4c68-bae9-b3adcb02b0dc"
+      },
+      "Type": 2,
+      "Model": {
+        "Flow": {
+          "name": "\u241A Rename file to book title",
+          "uid": "576714be-4377-494e-bb4f-b41d7e52d4a5",
+          "type": "FileFlows.Shared.Models.Flow"
+        },
+        "Folder": "{folder.Orig.FullName}",
+        "Pattern": ".*\\.(m4b|wma|mp3|aiff|ogg|opf|flac|m4a|epub|pdf|mobi|azw3)$",
+        "Recursive": false
+      }
+    },
+    {
+      "Uid": "8623f0dc-6a9b-4755-bba0-03aec1c4d914",
+      "Name": "Copy files to destination",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Function",
+      "xPos": 850,
+      "yPos": 1070,
+      "Label": "Function",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "48efce21-52dd-4ac4-b21d-efe7aeab6b32"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "40fa5e99-2757-46aa-849e-0b6d7a419819"
+      },
+      "Type": 2,
+      "Model": {
+        "Outputs": 1,
+        "Code": "/**\n * Recursive copy (overwrite), with trailing-slash sanitation for internal use only\n * @version 1.3\n */\n\n// Use Variables exactly as provided\nvar sourceRoot = Variables.folder.Orig.FullName;\nvar destRoot   = Variables.finalDestinationDirectory;\n\nif (!sourceRoot) { \n  Logger.ELog(\u0022folder.Orig.FullName is empty\u0022); \n  return -1; \n}\nif (!destRoot)   {\n  Logger.ELog(\u0022finalDestinationDirectory is empty\u0022); \n  return -1; \n}\n\nvar Directory    = System.IO.Directory;\nvar File         = System.IO.File;\nvar Path         = System.IO.Path;\nvar SearchOption = System.IO.SearchOption;\n\n// Ensure destination exists\nif (!Directory.Exists(destRoot))\n  Directory.CreateDirectory(destRoot);\n\n// Sanitize working copies (DO NOT mutate Variables)\nvar src = Path.GetFullPath(sourceRoot);\nvar dst = Path.GetFullPath(destRoot);\n\n// Ensure trailing separator for consistent relative math in fallback branch\nvar sep = Path.DirectorySeparatorChar;\nif (!src.endsWith(sep)) src = src \u002B sep;\nif (!dst.endsWith(sep)) dst = dst \u002B sep;\n\nLogger.ILog(\u0022Recursive copy starting\u0022);\nLogger.ILog(\u0022 Source: \u0022 \u002B src);\nLogger.ILog(\u0022 Dest:   \u0022 \u002B dst);\n\n// Enumerate all files\nvar files = Directory.GetFiles(src, \u0022*\u0022, SearchOption.AllDirectories);\n\n// Bridge can expose count as either .Length (CLR) or .length (JS)\nvar count = 0;\nif (files) {\n  if (typeof(files.Length) !== \u0022undefined\u0022) count = files.Length;\n  else if (typeof(files.length) !== \u0022undefined\u0022) count = files.length;\n}\n\nLogger.ILog(\u0022 Discovered files: \u0022 \u002B count);\n\nif (count === 0) {\n  Logger.WLog(\u0022No files found under source; check path/mounts/permissions.\u0022);\n  return 1;\n}\n\n// Iterate and copy (overwrite)\nvar copied = 0;\nvar failed = 0;\nvar i = 0;\n\n// Accessor so loop works regardless of .Length/.length\nvar getAt = function(arr, idx){\n  return (typeof(arr.get) === \u0022function\u0022) ? arr.get(idx) : arr[idx];\n};\n\nwhile (i \u003C count) {\n  var srcFile = getAt(files, i);\n\n  // Relative path\n  var rel = \u0022\u0022;\n  if (Path.GetRelativePath)\n    rel = Path.GetRelativePath(src, srcFile);\n  else {\n    // Fallback: strip the src prefix (with ensured trailing slash)\n    var f = \u0022\u0022 \u002B srcFile;\n    if (f.indexOf(src) === 0) rel = f.substring(src.length).replace(/^[/\\\\]\u002B/, \u0022\u0022);\n    else rel = Path.GetFileName(srcFile);\n  }\n\n  var dstFile = Path.Combine(dst, rel);\n  var dstDir  = Path.GetDirectoryName(dstFile);\n\n  if (!Directory.Exists(dstDir))\n    Directory.CreateDirectory(dstDir);\n\n  // Overwrite = true (merge behavior)\n  File.Copy(srcFile, dstFile, true);\n\n  if (File.Exists(dstFile)) copied = copied \u002B 1;\n  else failed = failed \u002B 1;\n\n  i = i \u002B 1;\n}\n\nLogger.ILog(\u0022Copy complete. Copied: \u0022 \u002B copied \u002B \u0022, Failed: \u0022 \u002B failed);\nreturn 1;\n"
+      }
+    },
+    {
+      "Uid": "40fa5e99-2757-46aa-849e-0b6d7a419819",
+      "Name": "Copy to destination failed",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.FailFlow",
+      "xPos": 1080,
+      "yPos": 1070,
+      "Label": "Fail Flow",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 3,
+      "Model": {
+        "Reason": "Copy to destination failed"
+      }
+    },
+    {
+      "Uid": "48efce21-52dd-4ac4-b21d-efe7aeab6b32",
+      "Name": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.File.DeleteOriginal",
+      "xPos": 850,
+      "yPos": 1180,
+      "Label": "Delete Original",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "ce1ade1a-b82d-4171-9b7b-5c3337d16d53"
+        }
+      ],
+      "Type": 2,
+      "Model": {}
+    },
+    {
+      "Uid": "852f972e-239f-4d0d-a89e-695a53420bb0",
+      "Name": "Set finalDestinationDirectory",
+      "Color": "#00FF00",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetVariable",
+      "xPos": 850,
+      "yPos": 960,
+      "Label": "Set Variable",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "8623f0dc-6a9b-4755-bba0-03aec1c4d914"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Variable": "finalDestinationDirectory",
+        "Value": "{authorDirectory}/{book.title}/"
+      }
+    },
+    {
+      "Uid": "be26ff3c-914e-4e53-aeec-3636c3ce01cd",
+      "Name": "Set: acceptedBookSeries",
+      "Color": "#00FF00",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetVariable",
+      "xPos": 280,
+      "yPos": 1130,
+      "Label": "Set Variable",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "b6d83935-435b-48b6-895c-2472c4acf5c1"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Variable": "acceptedBookSeries",
+        "Value": "{book.series}"
+      }
+    },
+    {
+      "Uid": "680bec4f-8646-4b13-8259-5e1e54a62b70",
+      "Name": "Set: acceptedBookSeries",
+      "Color": "#00FF00",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetVariable",
+      "xPos": 520,
+      "yPos": 1130,
+      "Label": "Set Variable",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "b6d83935-435b-48b6-895c-2472c4acf5c1"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Variable": "acceptedBookSeries",
+        "Value": "{openLibrarySeries}"
+      }
+    },
+    {
+      "Uid": "100b7fdb-9eb2-466b-b183-2222868c8c00",
+      "Name": "Is MP3-Chaptered Audiobook",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Scripting.ShellScript",
+      "xPos": 50,
+      "yPos": 380,
+      "Label": "Shell Script (.sh)",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "3c49b292-6232-429a-8a11-dc8ed455e073"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "c4b90931-94fc-4a6e-ad61-39c9e143e998"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "Code": "# Exit 1: Is MP3-list directory \n# Exit 2: Zero or 1 audio file\n# Exit: -1 Fail flow\n\nOriginalFolder=\u0022{folder.Orig.FullName}\u0022\n\necho \u0022Debug: Starting mp3 check script\u0022\n\n# Ensure OriginalFolder is set\nif [ -z \u0022$OriginalFolder\u0022 ]; then\n    echo \u0022Error: OriginalFolder is not set.\u0022\n    exit -1\nfi\n\necho \u0022Debug: OriginalFolder=\u0027$OriginalFolder\u0027\u0022\n\n# Ensure OriginalFolder points to a directory\nif [ ! -d \u0022$OriginalFolder\u0022 ]; then\n    echo \u0022Error: $OriginalFolder is not a directory.\u0022\n    exit -1\nfi\n\n# Count mp3 files (non-recursive) in that directory\ncount=$(find \u0022$OriginalFolder\u0022 -maxdepth 1 -type f -iname \u0022*.mp3\u0022 | wc -l)\necho \u0022Debug: Found $count mp3 file(s) in $OriginalFolder\u0022\n\nif [ \u0022$count\u0022 -gt 1 ]; then\n    echo \u0022Exiting with code 1 (more than one mp3)\u0022\n    exit 1\nelse\n    echo \u0022Exiting with code 2 (zero or one mp3)\u0022\n    exit 2\nfi",
+        "Outputs": 2
+      }
+    },
+    {
+      "Uid": "45e28b23-6d29-4d78-9efb-758ef8594f58",
+      "Name": "Convert ebooks to EPUB",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.FolderIterator",
+      "xPos": 730,
+      "yPos": 380,
+      "Label": "Folder Iterator",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "3c49b292-6232-429a-8a11-dc8ed455e073"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "Flow": {
+          "name": "\u241A Convert PDF and Mobi to Epub",
+          "uid": "abe4a09b-a00f-4b11-b15e-29e1b1836376",
+          "type": "FileFlows.Shared.Models.Flow"
+        },
+        "Folder": "{folder.Orig.FullName}",
+        "Pattern": "",
+        "Recursive": false
+      }
+    },
+    {
+      "Uid": "ce1ade1a-b82d-4171-9b7b-5c3337d16d53",
+      "Name": "",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "BasicNodes.File.SetWorkingFile",
+      "xPos": 850,
+      "yPos": 1280,
+      "Label": "Set Working File",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "925bfa09-20e9-4e94-99c5-df894e2f048c"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "File": "{finalDestinationDirectory}",
+        "DontDeletePrevious": true
+      }
+    },
+    {
+      "Uid": "d8e8a8f9-617c-4ecc-92ce-0dae7436c0fc",
+      "Name": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.CompleteFlow",
+      "xPos": 530,
+      "yPos": 230,
+      "Label": "Complete Flow",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 3,
+      "Model": {}
+    },
+    {
+      "Uid": "2832d590-be5a-4558-8c61-604999c81799",
+      "Name": "Book: Prepare working directory",
+      "Color": "#FF1493",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlow:3924f3ce-d648-47ab-a776-1d78292a2de6",
+      "xPos": 110,
+      "yPos": 110,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 3,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "8bba577f-bc5b-42a7-9e86-1da3b7e60035"
+        },
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "f7697814-4c8f-4809-b5fa-e1a20db100b9"
+        },
+        {
+          "Input": 1,
+          "Output": 3,
+          "InputNode": "bb80c10a-4c4a-4ef6-94c5-a3e917e39d2a"
+        }
+      ],
+      "Type": 10,
+      "Model": {
+        "Output": 1
+      }
+    },
+    {
+      "Uid": "8bba577f-bc5b-42a7-9e86-1da3b7e60035",
+      "Name": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.CompleteFlow",
+      "xPos": 340,
+      "yPos": 110,
+      "Label": "Complete Flow",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 3,
+      "Model": {}
+    },
+    {
+      "Uid": "f7697814-4c8f-4809-b5fa-e1a20db100b9",
+      "Name": "Set \u0022book\u0022 variable from folder name",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlow:34c67611-60a3-4e90-b559-211f1cd6462c",
+      "xPos": 70,
+      "yPos": 220,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "100b7fdb-9eb2-466b-b183-2222868c8c00"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "d2f917c0-5ac4-40b9-a487-190249d13ace"
+        }
+      ],
+      "Type": 10,
+      "Model": {
+        "Output": 1
+      }
+    },
+    {
+      "Uid": "3c49b292-6232-429a-8a11-dc8ed455e073",
+      "Name": "Set Author Directory",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetVariable",
+      "xPos": 280,
+      "yPos": 660,
+      "Label": "Set Variable",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "c5c15498-d5b3-4e4a-96ca-513723902cc6"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Variable": "authorDirectory",
+        "Value": "{AudiobookshelfLibraryPath}{book.author}"
+      }
+    },
+    {
+      "Uid": "c5c15498-d5b3-4e4a-96ca-513723902cc6",
+      "Name": "Failed to establish author directory",
+      "Color": "#FF4500",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.VariableMatch",
+      "xPos": 280,
+      "yPos": 760,
+      "Label": "Variable Match",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "1badc77a-45ef-4d0a-a41a-fe662c51c50a"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "05332da8-7e73-4ca6-8838-2f80ba52e2a5"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "VariableName": "AudiobookshelfLibraryPath",
+        "Input": "{authorDirectory}"
+      }
+    },
+    {
+      "Uid": "1badc77a-45ef-4d0a-a41a-fe662c51c50a",
+      "Name": "Fail Flow: Directory Warning",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.FailFlow",
+      "xPos": 70,
+      "yPos": 880,
+      "Label": "Fail Flow",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 3,
+      "Model": {
+        "Reason": "Failed to set author directory variable as subdirectory off audiobookshelf"
+      }
+    },
+    {
+      "Uid": "7cd0ecdf-2a66-46a3-943d-5b034205772c",
+      "Name": "Create author directory",
+      "Color": "#800080",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.File.Touch",
+      "xPos": 20,
+      "yPos": 1050,
+      "Label": "Touch",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [],
+      "Type": 2,
+      "Model": {
+        "FileName": "{authorDirectory}"
+      }
+    },
+    {
+      "Uid": "7d2bb80d-66b4-4f86-a203-ae882ba051e1",
+      "Name": "Fail Flow: Create Author Directory",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.FailFlow",
+      "xPos": 540,
+      "yPos": 890,
+      "Label": "Fail Flow",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 3,
+      "Model": {
+        "Reason": "Failed to create the author directory"
+      }
+    },
+    {
+      "Uid": "b3b2e784-ccc9-4dfd-90df-c3c7bcd3601b",
+      "Name": "book.series Variable Set",
+      "Color": "#FF8C00",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.File.VariableExists",
+      "xPos": 320,
+      "yPos": 990,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "be26ff3c-914e-4e53-aeec-3636c3ce01cd"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "d976a48c-d58a-4391-b4d8-4b631cefbc52"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Variable": "book.series"
+      }
+    },
+    {
+      "Uid": "b6d83935-435b-48b6-895c-2472c4acf5c1",
+      "Name": "Set Variable: seriesDirectory",
+      "Color": "#00FF00",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetVariable",
+      "xPos": 390,
+      "yPos": 1270,
+      "Label": "Set Variable",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "01953e51-299c-46ac-bcfe-572a975dcad7"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "Variable": "seriesDirectory",
+        "Value": "{authorDirectory}/{acceptedBookSeries}/"
+      }
+    },
+    {
+      "Uid": "a2cbb06f-207e-4f3e-8da2-a4f603002b71",
+      "Name": "Create seriesDirectory directory",
+      "Color": "#800080",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.File.Touch",
+      "xPos": 60,
+      "yPos": 1180,
+      "Label": "Touch",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [],
+      "Type": 2,
+      "Model": {
+        "FileName": "{seriesDirectory}"
+      }
+    },
+    {
+      "Uid": "05332da8-7e73-4ca6-8838-2f80ba52e2a5",
+      "Name": "Create author directory",
+      "Color": "#800080",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Scripting.ShellScript",
+      "xPos": 320,
+      "yPos": 880,
+      "Label": "Shell Script (.sh)",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "b3b2e784-ccc9-4dfd-90df-c3c7bcd3601b"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "7d2bb80d-66b4-4f86-a203-ae882ba051e1"
+      },
+      "Type": 2,
+      "Model": {
+        "Code": "mkdir -p \u0022{authorDirectory}\u0022\nexit 1",
+        "Outputs": 1
+      }
+    },
+    {
+      "Uid": "90e97f0c-3daa-4106-9889-a50eda0427ae",
+      "Name": "Set Book Series",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Function",
+      "xPos": 30,
+      "yPos": 610,
+      "Label": "Function",
+      "Inputs": 1,
+      "Outputs": 2,
+      "Type": 2,
+      "Model": {
+        "Outputs": 2,
+        "Code": "/**\n * {\n  \u0022links\u0022: {\n    \u0022self\u0022: \u0022/works/OL41914127W/editions.json?limit=100\u0022,\n    \u0022work\u0022: \u0022/works/OL41914127W\u0022\n  },\n  \u0022size\u0022: 1,\n  \u0022entries\u0022: [\n    {\n      \u0022works\u0022: [\n        {\n          \u0022key\u0022: \u0022/works/OL41914127W\u0022\n        }\n      ],\n      \u0022title\u0022: \u0022This Inevitable Ruin\u0022,\n      \u0022publishers\u0022: [\n        \u0022Independently published\u0022\n      ],\n      \u0022publish_date\u0022: \u00222024-11-03\u0022,\n      \u0022key\u0022: \u0022/books/OL56917601M\u0022,\n      \u0022type\u0022: {\n        \u0022key\u0022: \u0022/type/edition\u0022\n      },\n      \u0022covers\u0022: [14822731],\n      \u0022series\u0022: [\n        \u0022Dungeon Crawler Carl\u0022\n      ],\n      \u0022languages\u0022: [\n        {\n          \u0022key\u0022: \u0022/languages/eng\u0022\n        }\n      ],\n      \u0022identifiers\u0022: {\n        \u0022amazon\u0022: [\n          \u0022B0DLTHPBQJ\u0022\n        ]\n      },\n      \u0022isbn_13\u0022: [\n        \u00229798344591230\u0022\n      ],\n      \u0022physical_dimensions\u0022: \u00229 x 6 x 1.81 inches\u0022,\n      \u0022weight\u0022: \u00222.3 pounds\u0022,\n      \u0022physical_format\u0022: \u0022Paperback\u0022,\n      \u0022number_of_pages\u0022: 722,\n      \u0022latest_revision\u0022: 6,\n      \u0022revision\u0022: 6,\n      \u0022created\u0022: {\n        \u0022type\u0022: \u0022/type/datetime\u0022,\n        \u0022value\u0022: \u00222024-10-07T04:01:01.239733\u0022\n      },\n      \u0022last_modified\u0022: {\n        \u0022type\u0022: \u0022/type/datetime\u0022,\n        \u0022value\u0022: \u00222025-04-02T18:22:36.824032\u0022\n      }\n    }\n  ]\n}\n */\nconst ed = Variables.openLibraryEditions;\nLogger.DLog(\u0022openLibraryEditions\u0022, ed.entries.length)\n\nif(ed?.entries?.length===0){\n  Logger.DLog(\u0022No editions returned\u0022)\n  return 2\n}\n\nconst seriesEdition = ed?.entries.filter(entry =\u003E {\n  return entry?.series \u0026\u0026 entry.series.length \u003E= 1\n})?.shift() || []\n\nLogger.DLog(\u0022bookSeries\u0022, seriesEdition, seriesEdition?.series)\nif(seriesEdition.length === 0) {\n  Logger.DLog(\u0022Edition found, but no series identified\u0022)\n  return 2\n}\n\nLogger.DLog(\u0022Series name\u0022, seriesEdition.series[0])\nVariables.openLibrarySeries = seriesEdition.series[0]  \n  .normalize(\u0027NFKD\u0027)\n  .replace(/[\\u0300-\\u036f]/g, \u0027\u0027)\n  .replace(/[\u2019\u0027]/g, \u0027\u0027)\n  .replace(/[\\/\\\\?%*:|\u0022\u003C\u003E]/g, \u0027 \u0027)\n  .replace(/\\s\u002B/g, \u0027 \u0027)\n  .replace(/^\\.\u002B|\\.\u002B$/g, \u0027\u0027)\n  .trim()\n  .slice(0, 80) || \u0027Unknown\u0027;\n\nreturn 1;"
+      }
+    },
+    {
+      "Uid": "01953e51-299c-46ac-bcfe-572a975dcad7",
+      "Name": "Create series directory",
+      "Color": "#800080",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Scripting.ShellScript",
+      "xPos": 620,
+      "yPos": 1280,
+      "Label": "Shell Script (.sh)",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "852f972e-239f-4d0d-a89e-695a53420bb0"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "Code": "mkdir -p \u0022{seriesDirectory}\u0022\nexit 1",
+        "Outputs": 1
+      }
+    },
+    {
+      "Uid": "1b1d3cd9-36a3-4659-bb6b-bc78d6911330",
+      "Name": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.File.DeleteOriginal",
+      "xPos": 1130,
+      "yPos": 650,
+      "Label": "Delete Original",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [],
+      "Type": 2,
+      "Model": {}
+    },
+    {
+      "Uid": "cef5914c-8676-4c68-bae9-b3adcb02b0dc",
+      "Name": "Log: Junk Download",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Log",
+      "xPos": 520,
+      "yPos": 580,
+      "Label": "Log",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "767dbaff-0be3-406a-b0c0-60fda19e0267"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "LogType": 1,
+        "Message": "Junk download. Nothing to process"
+      }
+    },
+    {
+      "Uid": "82aa3672-5ed2-4820-b1ec-9aab412f942a",
+      "Name": "",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.SetFileFlowsThumbnail",
+      "xPos": 1130,
+      "yPos": 570,
+      "Label": "Set FileFlows Thumbnail",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "1b1d3cd9-36a3-4659-bb6b-bc78d6911330"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "FilePath": "{resource.Trash}",
+        "IfNotSet": false
+      }
+    },
+    {
+      "Uid": "767dbaff-0be3-406a-b0c0-60fda19e0267",
+      "Name": "",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "BasicNodes.File.SetWorkingFile",
+      "xPos": 1130,
+      "yPos": 470,
+      "Label": "Set Working File",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "82aa3672-5ed2-4820-b1ec-9aab412f942a"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "File": "{folder.Orig.FullName}",
+        "DontDeletePrevious": false
+      }
+    },
+    {
+      "Uid": "bb80c10a-4c4a-4ef6-94c5-a3e917e39d2a",
+      "Name": "Log: Unwanted Files",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Log",
+      "xPos": 730,
+      "yPos": 130,
+      "Label": "Log",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "767dbaff-0be3-406a-b0c0-60fda19e0267"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "LogType": 1,
+        "Message": "Has unwanted compressed files such as zip and rar"
+      }
+    }
+  ]
+}

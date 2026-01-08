@@ -1,0 +1,288 @@
+{
+  "Name": "Subflow find book series from Google info",
+  "Uid": "13b4af40-e190-421d-912a-b1c8ffc31bf8",
+  "Type": 2,
+  "Revision": 27,
+  "Description": "Finds series from Google Books info; outputs 1: found, 2: not found",
+  "Icon": "fas fa-layer-group",
+  "Properties": {
+    "Fields": [],
+    "Variables": {},
+    "Outputs": [
+      {
+        "Key": 1,
+        "Value": "Series found"
+      },
+      {
+        "Key": 2,
+        "Value": "Series not found"
+      }
+    ]
+  },
+  "Parts": [
+    {
+      "Uid": "b48c1286-cea6-4146-b500-262d59346d2a",
+      "Name": "Ask Open Library For Details",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.Web.FlowElements.WebRequest",
+      "xPos": 90,
+      "yPos": 110,
+      "Label": "Web Request",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "f4a86495-3aef-43f2-ba52-b7ab7088276c"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "68924d4f-f1ee-4250-bbf5-253937d77200"
+        }
+      ],
+      "Type": 8,
+      "Model": {
+        "Url": "https://openlibrary.org/search.json?title={book.title}\u0026author={book.author}",
+        "Method": "GET",
+        "ContentType": "application/json",
+        "Headers": [],
+        "Body": null,
+        "ResponseVariable": "openLibrarySearch"
+      }
+    },
+    {
+      "Uid": "68924d4f-f1ee-4250-bbf5-253937d77200",
+      "Name": "Log: Bad Response",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Log",
+      "xPos": 290,
+      "yPos": 210,
+      "Label": "Log",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "940f42de-8606-4076-a4a8-8de1c95c4e8e"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "LogType": 0,
+        "Message": "Open library responded with a non-200 status"
+      }
+    },
+    {
+      "Uid": "f4a86495-3aef-43f2-ba52-b7ab7088276c",
+      "Name": "Set openLibrarySearch Info",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Function",
+      "xPos": 50,
+      "yPos": 200,
+      "Label": "Function",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "a3238196-040d-4116-abd3-23500bfa2b3e"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "41aab39f-c9ac-4bab-9124-6b1d344e39f5"
+        }
+      ],
+      "ErrorConnection": {
+        "Input": 1,
+        "Output": -1,
+        "InputNode": "68924d4f-f1ee-4250-bbf5-253937d77200"
+      },
+      "Type": 2,
+      "Model": {
+        "Outputs": 2,
+        "Code": "/**\n * {\n    \u0022numFound\u0022: 1,\n    \u0022start\u0022: 0,\n    \u0022numFoundExact\u0022: true,\n    \u0022num_found\u0022: 1,\n    \u0022documentation_url\u0022: \u0022https://openlibrary.org/dev/docs/api/search\u0022,\n    \u0022q\u0022: \u0022title:This Inevitable Ruin author:Matt\u0022,\n    \u0022offset\u0022: null,\n    \u0022docs\u0022: [\n        {\n            \u0022author_key\u0022: [\n                \u0022OL3101279A\u0022\n            ],\n            \u0022author_name\u0022: [\n                \u0022Matt Dinniman\u0022\n            ],\n            \u0022cover_edition_key\u0022: \u0022OL56917601M\u0022,\n            \u0022cover_i\u0022: 14822731,\n            \u0022ebook_access\u0022: \u0022no_ebook\u0022,\n            \u0022edition_count\u0022: 1,\n            \u0022first_publish_year\u0022: 2024,\n            \u0022has_fulltext\u0022: false,\n            \u0022key\u0022: \u0022/works/OL41914127W\u0022,\n            \u0022language\u0022: [\n                \u0022eng\u0022\n            ],\n            \u0022public_scan_b\u0022: false,\n            \u0022title\u0022: \u0022This Inevitable Ruin\u0022\n        }\n    ]\n}\n */\nif(Variables.openLibrarySearch.numFound === 0 ) {\n    return 2\n}\n\nVariables.openLibraryWorksPath = Variables.openLibrarySearch.docs[0].key\n\nreturn 1"
+      }
+    },
+    {
+      "Uid": "a3238196-040d-4116-abd3-23500bfa2b3e",
+      "Name": "Ask Open Library For Series",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.Web.FlowElements.WebRequest",
+      "xPos": 50,
+      "yPos": 340,
+      "Label": "Web Request",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "e57bce7a-33aa-4d96-9681-bddc6bd45f0f"
+        }
+      ],
+      "Type": 8,
+      "Model": {
+        "Url": "https://openlibrary.org/{openLibraryWorksPath}/editions.json?limit=100",
+        "Method": "GET",
+        "ContentType": "application/json",
+        "Headers": [],
+        "Body": null,
+        "ResponseVariable": "openLibraryEditions"
+      }
+    },
+    {
+      "Uid": "e57bce7a-33aa-4d96-9681-bddc6bd45f0f",
+      "Name": "Set Book Series",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Function",
+      "xPos": 50,
+      "yPos": 430,
+      "Label": "Function",
+      "Inputs": 1,
+      "Outputs": 2,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "1e595e4e-6ad6-4cd7-8cc9-f78901304b18"
+        },
+        {
+          "Input": 1,
+          "Output": 2,
+          "InputNode": "41aab39f-c9ac-4bab-9124-6b1d344e39f5"
+        }
+      ],
+      "Type": 2,
+      "Model": {
+        "Outputs": 2,
+        "Code": "/**\n * {\n  \u0022links\u0022: {\n    \u0022self\u0022: \u0022/works/OL41914127W/editions.json?limit=100\u0022,\n    \u0022work\u0022: \u0022/works/OL41914127W\u0022\n  },\n  \u0022size\u0022: 1,\n  \u0022entries\u0022: [\n    {\n      \u0022works\u0022: [\n        {\n          \u0022key\u0022: \u0022/works/OL41914127W\u0022\n        }\n      ],\n      \u0022title\u0022: \u0022This Inevitable Ruin\u0022,\n      \u0022publishers\u0022: [\n        \u0022Independently published\u0022\n      ],\n      \u0022publish_date\u0022: \u00222024-11-03\u0022,\n      \u0022key\u0022: \u0022/books/OL56917601M\u0022,\n      \u0022type\u0022: {\n        \u0022key\u0022: \u0022/type/edition\u0022\n      },\n      \u0022covers\u0022: [14822731],\n      \u0022series\u0022: [\n        \u0022Dungeon Crawler Carl\u0022\n      ],\n      \u0022languages\u0022: [\n        {\n          \u0022key\u0022: \u0022/languages/eng\u0022\n        }\n      ],\n      \u0022identifiers\u0022: {\n        \u0022amazon\u0022: [\n          \u0022B0DLTHPBQJ\u0022\n        ]\n      },\n      \u0022isbn_13\u0022: [\n        \u00229798344591230\u0022\n      ],\n      \u0022physical_dimensions\u0022: \u00229 x 6 x 1.81 inches\u0022,\n      \u0022weight\u0022: \u00222.3 pounds\u0022,\n      \u0022physical_format\u0022: \u0022Paperback\u0022,\n      \u0022number_of_pages\u0022: 722,\n      \u0022latest_revision\u0022: 6,\n      \u0022revision\u0022: 6,\n      \u0022created\u0022: {\n        \u0022type\u0022: \u0022/type/datetime\u0022,\n        \u0022value\u0022: \u00222024-10-07T04:01:01.239733\u0022\n      },\n      \u0022last_modified\u0022: {\n        \u0022type\u0022: \u0022/type/datetime\u0022,\n        \u0022value\u0022: \u00222025-04-02T18:22:36.824032\u0022\n      }\n    }\n  ]\n}\n */\nconst ed = Variables.openLibraryEditions;\nLogger.DLog(\u0022openLibraryEditions\u0022, ed.entries.length)\n\nif(ed?.entries?.length===0){\n  Logger.DLog(\u0022No editions returned\u0022)\n  return 2\n}\n\nconst seriesEdition = ed?.entries.filter(entry =\u003E {\n  return entry?.series \u0026\u0026 entry.series.length \u003E= 1\n})?.shift() || []\n\nLogger.DLog(\u0022bookSeries\u0022, seriesEdition, seriesEdition?.series)\nif(seriesEdition.length === 0) {\n  Logger.DLog(\u0022Edition found, but no series identified\u0022)\n  return 2\n}\n\nLogger.DLog(\u0022Series name\u0022, seriesEdition.series[0])\nVariables.openLibrarySeries = seriesEdition.series[0]  \n  .normalize(\u0027NFKD\u0027)\n  .replace(/[\\u0300-\\u036f]/g, \u0027\u0027)\n  .replace(/[\u2019\u0027]/g, \u0027\u0027)\n  .replace(/[\\/\\\\?%*:|\u0022\u003C\u003E]/g, \u0027 \u0027)\n  .replace(/\\s\u002B/g, \u0027 \u0027)\n  .replace(/^\\.\u002B|\\.\u002B$/g, \u0027\u0027)\n  .trim()\n  .slice(0, 80) || \u0027Unknown\u0027;\n\nreturn 1;"
+      }
+    },
+    {
+      "Uid": "1e595e4e-6ad6-4cd7-8cc9-f78901304b18",
+      "Name": "Log Series Name",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Log",
+      "xPos": 50,
+      "yPos": 540,
+      "Label": "Log",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "17b7d17b-2aff-4052-bfb6-112f7c46870f"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "LogType": 3,
+        "Message": "Series name: {openLibrarySeries}"
+      }
+    },
+    {
+      "Uid": "41aab39f-c9ac-4bab-9124-6b1d344e39f5",
+      "Name": "Log No Series",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "FileFlows.BasicNodes.Functions.Log",
+      "xPos": 250,
+      "yPos": 540,
+      "Label": "Log",
+      "Inputs": 1,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "2998b060-00eb-4687-95d5-6077a7cb4f56"
+        }
+      ],
+      "Type": 3,
+      "Model": {
+        "LogType": 3,
+        "Message": "This book does not appear to be part of a series"
+      }
+    },
+    {
+      "Uid": "940f42de-8606-4076-a4a8-8de1c95c4e8e",
+      "Name": "Without Series Information",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowOutput",
+      "xPos": 290,
+      "yPos": 300,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 1,
+      "Model": {
+        "Output": 2
+      }
+    },
+    {
+      "Uid": "ef8651e7-2dd8-42b9-95d6-2c80c05a64b0",
+      "Name": "Sub Flow Input",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowInput",
+      "xPos": 90,
+      "yPos": 20,
+      "Label": "",
+      "Inputs": 0,
+      "Outputs": 1,
+      "OutputConnections": [
+        {
+          "Input": 1,
+          "Output": 1,
+          "InputNode": "b48c1286-cea6-4146-b500-262d59346d2a"
+        }
+      ],
+      "Type": 0,
+      "Model": {}
+    },
+    {
+      "Uid": "17b7d17b-2aff-4052-bfb6-112f7c46870f",
+      "Name": "Series Found",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowOutput",
+      "xPos": 40,
+      "yPos": 640,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 1,
+      "Model": {
+        "Output": 1
+      }
+    },
+    {
+      "Uid": "2998b060-00eb-4687-95d5-6077a7cb4f56",
+      "Name": "Series Not Found",
+      "Color": "",
+      "ReadOnly": false,
+      "FlowElementUid": "SubFlowOutput",
+      "xPos": 250,
+      "yPos": 640,
+      "Label": "",
+      "Inputs": 1,
+      "Outputs": 0,
+      "Type": 1,
+      "Model": {
+        "Output": 2
+      }
+    }
+  ]
+}
