@@ -1,5 +1,5 @@
 {
-  "Name": "\uD83D\uDCD2 Books by File",
+  "Name": "\uD83D\uDCD2 Books by file",
   "Type": 0,
   "Revision": 137,
   "Description": "Takes a single book file drop, fetches/enriches metadata, converts to EPUB when needed, and places it into your Audiobookshelf layout.",

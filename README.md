@@ -12,7 +12,7 @@ Flows that prep book folders/files (ebooks and audiobooks) for Audiobookshelf: c
   4. Move/rename into the Audiobookshelf layout and tidy the workspace.
 - Entry flows:
   - `📒 Books by directory.json` (folder-triggered): takes a folder drop, prepares the workspace, enriches metadata, and shelves it in your Audiobookshelf layout.
-  - `📒 Books by File.json` (file-triggered): takes a single book file, fetches/enriches metadata, converts to EPUB if needed, and shelves it in your Audiobookshelf layout.
+  - `📒 Books by file.json` (file-triggered): takes a single book file, fetches/enriches metadata, converts to EPUB if needed, and shelves it in your Audiobookshelf layout.
 - Subflows: `Subflow prep book workspace`, `Subflow set book from folder`, `Subflow fetch Google book info`, `Subflow find book series from Google info`, `Subflow set book from search`, `Subflow query OpenAI for book info`.
 
 ## Why use this
@@ -37,13 +37,13 @@ Import in this order to satisfy subflow dependencies:
 4) `Subflow set book from folder`
 5) `Subflow prep book workspace`
 6) `Subflow find book series from Google info`
-7) `📒 Books by File.json`
+7) `📒 Books by file.json`
 8) `📒 Books by directory.json`
 
 ## Configure after import
 - Library paths:
   - `📒 Books by directory.json` → node `Move eBook Directory`: set `DestinationPath` to your Audiobookshelf books path.
-  - `📒 Books by File.json` → node `Set: authorDirectory`: update the base path for authors.
+  - `📒 Books by file.json` → node `Set: authorDirectory`: update the base path for authors.
   - Both flows use `finalDestinationDirectory` variables; ensure they match your layout.
 - Optional: confirm `AudiobookshelfLibraryPath` matches your environment.
 
@@ -53,7 +53,7 @@ Import in this order to satisfy subflow dependencies:
   - Derive book metadata from folder name; validate mp3 layout; convert ebooks to EPUB.
   - Fetch metadata from Google Books; enrich series info from Open Library; build author/series folders.
   - Copy/rename into the Audiobookshelf structure and clean up the source.
-- File-triggered (`📒 Books by File.json`):
+- File-triggered (`📒 Books by file.json`):
   - Set search title from the file name; fetch metadata via Google Books/OpenAI.
   - Create author/series folders, convert to EPUB, move/rename into place.
 
